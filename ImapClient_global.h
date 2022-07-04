@@ -1,0 +1,12 @@
+#ifndef IMAPCLIENT_GLOBAL_H
+#define IMAPCLIENT_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(IMAPCLIENT_LIBRARY)
+#  define IMAPCLIENT_EXPORT Q_DECL_EXPORT
+#else
+#  define IMAPCLIENT_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // IMAPCLIENT_GLOBAL_H
