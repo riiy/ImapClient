@@ -1,7 +1,7 @@
 #ifndef IMAPCLIENT_H
 #define IMAPCLIENT_H
 
-#include "ImapClient_global.h"
+#include "imap_global.h"
 
 class IMAPCLIENT_EXPORT ImapClient
 {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(ImapClient LANGUAGES CXX)
+project(imap LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
@@ -12,12 +12,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
-add_library(ImapClient SHARED
-  ImapClient_global.h
-  imapclient.cpp
-  imapclient.h
+add_library(imap SHARED
+  src/imap_global.h
+  src/imapclient.cpp
+  src/imapclient.h
 )
 
-target_link_libraries(ImapClient PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(imap PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
-target_compile_definitions(ImapClient PRIVATE IMAPCLIENT_LIBRARY)
+target_compile_definitions(imap PRIVATE IMAPCLIENT_LIBRARY)
