@@ -16,10 +16,9 @@ class IMAPCLIENT_EXPORT ImapClient : public QObject
     Q_OBJECT
     Q_ENUMS (auth_method_t)
 
-    enum auth_method_t{LOGIN, START_TLS};
 public:
-    ImapClient(const QString & host = "localhost", int port = 25);
-
+    enum auth_method_t{LOGIN, START_TLS};
+    ImapClient(const QString & host = "localhost", int port = 25, auth_method_t method = auth_method_t::LOGIN);
     QString getHost() const;
     int getPort() const;
     QTcpSocket* getSocket();
@@ -45,12 +44,13 @@ public:
     @return         The server greeting message.
     @throw *        `connect()`, `auth_login(const string&, const string&)`.
     **/
-    QString authenticate(const QString& username, const QString& password, auth_method_t method);
+    void authenticate(const QString& username, const QString& password);
 
 protected:
     QTcpSocket *socket;
     const QString host;
     const int port;
+    auth_method_t method;
     /**
     Initiating a session to the server.
     @return           The server greeting message.
@@ -59,7 +59,7 @@ protected:
     @throw *          `parse_tag_result(const string&)`, `dialog::receive()`.
     @todo             Add server error messages to exceptions.
     **/
-    QString connect_host();
+    void connect_host();
 
     /**
     Performing an authentication by using the login method.
@@ -71,6 +71,7 @@ protected:
     @todo             Add server error messages to exceptions.
     **/
     void auth_login(const QString& username, const QString& password);
+    void sendMessage(const QString &text);
 };
 
 #endif // IMAPCLIENT_H
