@@ -1,5 +1,5 @@
 #include <QTest>
-
+#include "../src/imapclient.h"
 class TestImap: public QObject
 {
     Q_OBJECT
