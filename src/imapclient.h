@@ -25,7 +25,7 @@ public:
     /**
     Sending the logout command and closing the connection.
     **/
-    virtual ~ImapClient();
+     ~ImapClient();
 
     ImapClient(const ImapClient&) = delete;
 
@@ -45,12 +45,6 @@ public:
     @throw *        `connect()`, `auth_login(const string&, const string&)`.
     **/
     void authenticate(const QString& username, const QString& password);
-
-protected:
-    QTcpSocket *socket;
-    const QString host;
-    const int port;
-    auth_method_t method;
     /**
     Initiating a session to the server.
     @return           The server greeting message.
@@ -60,6 +54,12 @@ protected:
     @todo             Add server error messages to exceptions.
     **/
     void connect_host();
+
+protected:
+    QTcpSocket *socket;
+    const QString host;
+    const int port;
+    auth_method_t method;
 
     /**
     Performing an authentication by using the login method.

@@ -11,4 +11,4 @@ enable_testing(true)
 add_executable(imaptest test_imap.cpp)
 add_test(NAME imaptest COMMAND imaptest)
 
-target_link_libraries(imaptest PRIVATE Qt::Test)
+target_link_libraries(imaptest PRIVATE imap Qt::Test)

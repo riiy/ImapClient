@@ -2,6 +2,17 @@
 
 ImapClient::ImapClient(const QString & host, int port, auth_method_t method):host(host), port(port), method(method)
 {
+    switch (method)
+    {
+    case ImapClient::LOGIN:
+        socket = new QTcpSocket(this);
+        break;
+    case ImapClient::START_TLS:
+        socket = new QSslSocket(this);
+        connect(socket, SIGNAL(encrypted()),
+                this, SLOT(socketEncrypted()));
+        break;
+    }
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
                 this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
         connect(socket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
@@ -46,6 +57,9 @@ void ImapClient::authenticate(const QString& username, const QString& password){
                     .append((char) 0).append(password.toUtf8()).toBase64());
 }
 
+QTcpSocket* ImapClient::getSocket(){
+    return this->socket;
+}
 void ImapClient::sendMessage(const QString &text)
 {
 
