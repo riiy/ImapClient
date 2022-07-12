@@ -48,11 +48,13 @@ void ImapClient::connect_host(){
             ((QSslSocket*) socket)->connectToHostEncrypted(host, port);
             break;
         }
+    waitForEvent(3000, SIGNAL(readyConnected()));
 }
 
 void ImapClient::authenticate(const QString& username, const QString& password){
 
         // Sending command: AUTH PLAIN base64('\0' + username + '\0' + password)
+    qDebug() << username;
         sendMessage("AUTH PLAIN " + QByteArray().append((char) 0).append(username.toUtf8())
                     .append((char) 0).append(password.toUtf8()).toBase64());
 }
@@ -69,4 +71,95 @@ void ImapClient::sendMessage(const QString &text)
 
     socket->flush();
     socket->write(text.toUtf8() + "\r\n");
+}
+
+void ImapClient::socketReadyRead()
+{
+    QString responseLine;
+
+    if (!socket->isOpen()) {
+    qDebug() << "[Socket] error";
+        return;
+    }
+
+    while (socket->canReadLine()) {
+        // Save the server's response
+        responseLine = socket->readLine();
+        tempResponse += responseLine;
+
+#ifndef QT_NO_DEBUG
+        qDebug() << "[Socket] IN: " << responseLine;
+#endif
+    }
+ // Is this the last line of the response
+    if (responseLine[3] == ' ') {
+        responseText = tempResponse;
+        tempResponse = "";
+
+        // Extract the respose code from the server's responce (first 3 digits)
+        responseCode = responseLine.left(3).toInt();
+
+        // Check for server error
+        if (responseCode / 100 == 4) {
+        qDebug() << "[Socket] IN: " << responseCode;
+            return;
+        }
+
+        // Check for client error
+        if (responseCode / 100 == 5) {
+        qDebug() << "[Socket] IN: " << responseCode;
+            return;
+        }
+
+        qDebug() << responseText;
+    }
+}
+void ImapClient::socketStateChanged(QAbstractSocket::SocketState state) {
+
+#ifndef QT_NO_DEBUG
+    qDebug() << "[Socket] State:" << state;
+#endif
+    qDebug() << state;
+    switch (state)
+    {
+    case QAbstractSocket::ConnectedState:
+        sendMessage("EHLO localhost");
+
+        break;
+    case QAbstractSocket::UnconnectedState:
+        break;
+    default:
+        sendMessage("EHLO localhost");
+        ;
+    }
+}
+
+void ImapClient::socketError(QAbstractSocket::SocketError socketError) {
+#ifndef QT_NO_DEBUG
+    qDebug() << "[Socket] ERROR:" << socketError;
+#else
+    Q_UNUSED(socketError);
+#endif
+    qDebug() << "[Socket] ERROR:" << socketError;
+}
+
+void ImapClient::socketEncrypted() {
+        sendMessage("EHLO localhosts");
+}
+
+void ImapClient::waitForEvent(int msec, const char *successSignal)
+{
+    QEventLoop loop;
+    QObject::connect(this, successSignal, &loop, SLOT(quit()));
+    QObject::connect(this, SIGNAL(error(SmtpClient::SmtpError)), &loop, SLOT(quit()));
+
+    if(msec > 0)
+    {
+        QTimer timer;
+        timer.setSingleShot(true);
+        connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+        timer.start(msec);
+    }
+
+    loop.exec();
 }

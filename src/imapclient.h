@@ -60,6 +60,9 @@ protected:
     const QString host;
     const int port;
     auth_method_t method;
+    QString responseText;
+    int responseCode;
+    QString tempResponse;
 
     /**
     Performing an authentication by using the login method.
@@ -72,6 +75,21 @@ protected:
     **/
     void auth_login(const QString& username, const QString& password);
     void sendMessage(const QString &text);
+    void waitForEvent(int msec, const char *successSignal);
+protected slots:
+
+    void socketStateChanged(QAbstractSocket::SocketState state);
+    void socketError(QAbstractSocket::SocketError error);
+    void socketReadyRead();
+    void socketEncrypted();
+
+signals:
+
+    /* [7] Signals */
+
+    void connected();
+    void readyConnected();
+    void authenticated();
 };
 
 #endif // IMAPCLIENT_H

@@ -30,9 +30,9 @@ private slots:
 
     void myFirstTest()
     {
-        ImapClient imap("imap.exmail.qq.com", 993, ImapClient::LOGIN);
+        ImapClient imap("imap.exmail.qq.com", 993, ImapClient::START_TLS);
         imap.connect_host();
-imap.authenticate(username, password);
+        imap.authenticate(username, password);
         QVERIFY(true); // check that a condition is satisfied
         QCOMPARE(1, 1); // compare two values
     }
